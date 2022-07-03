@@ -4,6 +4,7 @@ import SplashScreen from "./screens/SplashScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import ChordScreen from "./screens/ChordScreen";
 import Header from "./components/Header";
+import Music from "./constants/music";
 
 export default function App() {
     const [confirmed, setConfirmed] = useState(false);
@@ -15,6 +16,7 @@ export default function App() {
     };
 
     const onStartHandler = (newSettings) => {
+        // create a list of the chord numbers the user chose
         const chordValues = Object.keys(newSettings).filter(
             (key) =>
                 newSettings[key] &&
@@ -22,16 +24,43 @@ export default function App() {
                     key
                 )
         );
+
+        // create a list of the chord types the user chose
         const chordType = Object.keys(newSettings).filter(
             (key) =>
                 newSettings[key] &&
-                ["major", "minor", "dominant", "diminished"].includes(key)
+                Object.keys(Music.displayTypes).includes(key)
         );
 
         if (chordValues.length === 0 || chordType.length === 0) {
             Alert.alert(
                 "No Chords Selected",
                 "Please select a chord and chord type.",
+                [{ text: "Ok" }]
+            );
+            return;
+        }
+
+        // ensure a compatible combination has been chosen
+        let isValid = true;
+        chordType.forEach((type) => {
+            let isPresent = false;
+            Music.chords.forEach((chord) => {
+                if (chordValues.includes("chord" + chord.number)) {
+                    if (chord.types.includes(type)) {
+                        isPresent = true;
+                    }
+                }
+            });
+            if (!isPresent) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            Alert.alert(
+                "Invalid Combination Selected",
+                "Chosen chords not possible to produce.",
                 [{ text: "Ok" }]
             );
             return;

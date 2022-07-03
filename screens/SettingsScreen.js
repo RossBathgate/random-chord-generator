@@ -15,7 +15,10 @@ const SettingsScreen = (props) => {
         major: false,
         minor: false,
         diminished: false,
+        half_diminished: false,
         dominant: false,
+        augmented: false,
+        sus4: false,
     });
 
     const checkBoxPressHandler = (dataTitle) => {
@@ -52,7 +55,7 @@ const SettingsScreen = (props) => {
                             checkBoxDataTitle='chord9'
                             isCheckBoxActive={checkBoxStatus.chord9}
                         />
-                        <Selection
+                        {/* <Selection
                             title='11 Chord'
                             onCheckBoxPress={checkBoxPressHandler}
                             checkBoxDataTitle='chord11'
@@ -63,7 +66,7 @@ const SettingsScreen = (props) => {
                             onCheckBoxPress={checkBoxPressHandler}
                             checkBoxDataTitle='chord13'
                             isCheckBoxActive={checkBoxStatus.chord13}
-                        />
+                        /> */}
                     </View>
 
                     <View style={styles.optionsContainer}>
@@ -91,6 +94,24 @@ const SettingsScreen = (props) => {
                             onCheckBoxPress={checkBoxPressHandler}
                             checkBoxDataTitle='diminished'
                             isCheckBoxActive={checkBoxStatus.diminished}
+                        />
+                        <Selection
+                            title='m (♭5)'
+                            onCheckBoxPress={checkBoxPressHandler}
+                            checkBoxDataTitle='half_diminished'
+                            isCheckBoxActive={checkBoxStatus.half_diminished}
+                        />
+                        <Selection
+                            title='Aug'
+                            onCheckBoxPress={checkBoxPressHandler}
+                            checkBoxDataTitle='augmented'
+                            isCheckBoxActive={checkBoxStatus.augmented}
+                        />
+                        <Selection
+                            title='sus4'
+                            onCheckBoxPress={checkBoxPressHandler}
+                            checkBoxDataTitle='sus4'
+                            isCheckBoxActive={checkBoxStatus.sus4}
                         />
                     </View>
                 </View>

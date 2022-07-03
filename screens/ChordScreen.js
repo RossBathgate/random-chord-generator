@@ -13,53 +13,87 @@ function randomIntFromInterval(min, max) {
 
 const ChordScreen = (props) => {
     const REFRESH_RATE = 4000;
-    const [chordText, setChordText] = useState("Press NEXT For Chord");
+    const [chordText, setChordText] = useState("");
     const [autoRefresh, setAutoRefresh] = useState(false);
 
     const generateNewChord = () => {
-        const chordValues = Object.keys(props.settings).filter(
+        // create a list of the chord numbers the user chose
+        const chosenChordNumbers = Object.keys(props.settings)
+            .filter(
+                (key) =>
+                    props.settings[key] &&
+                    [
+                        "chord6",
+                        "chord7",
+                        "chord9",
+                        "chord11",
+                        "chord13",
+                    ].includes(key)
+            )
+            .map((key) => key.split("chord")[1]);
+
+        // create a list of chord types the user chose
+        const chosenChordTypes = Object.keys(props.settings).filter(
             (key) =>
                 props.settings[key] &&
-                ["chord6", "chord7", "chord9", "chord11", "chord13"].includes(
-                    key
-                )
-        );
-        const chordType = Object.keys(props.settings).filter(
-            (key) =>
-                props.settings[key] &&
-                ["major", "minor", "dominant", "diminished"].includes(key)
-        );
-        const chordMap = {
-            chord6: 0,
-            chord7: 1,
-            chord9: 2,
-            chord11: 3,
-            chord13: 4,
-        };
-        const typeMap = {
-            minor: 0,
-            major: 1,
-            dominant: 2,
-            diminished: 3,
-        };
-
-        const chordLetterIdx = randomIntFromInterval(0, Music.note.length - 1);
-        const randChordValIdx = randomIntFromInterval(
-            0,
-            chordValues.length - 1
-        );
-        const randChordTypeIdx = randomIntFromInterval(0, chordType.length - 1);
-        const randSharpOrFlatIdx = randomIntFromInterval(
-            0,
-            Music.type.length - 1
+                Object.keys(Music.displayTypes).includes(key)
         );
 
-        // letter | sharp/flat | chordType | value
-        const chordStr =
-            Music.note[chordLetterIdx] +
-            Music.type[randSharpOrFlatIdx] +
-            Music.chordType[typeMap[chordType[randChordTypeIdx]]] +
-            Music.chordNumber[chordMap[chordValues[randChordValIdx]]];
+        // pick random note
+        const randomNote =
+            Music.notes[randomIntFromInterval(0, Music.notes.length - 1)];
+
+        // pick random chord number and type
+        let randomChordNumber, availableTypes;
+        do {
+            randomChordNumber =
+                chosenChordNumbers[
+                    Math.floor(Math.random() * chosenChordNumbers.length)
+                ];
+            availableTypes = Music.chords
+                .find((chord) => chord.number === randomChordNumber)
+                .types.filter((type) => chosenChordTypes.includes(type));
+        } while (availableTypes.length === 0);
+
+        const randomType =
+            availableTypes[Math.floor(Math.random() * availableTypes.length)];
+
+        // generate display string
+        let chordStr =
+            randomNote.letter +
+            randomNote.features[
+                Math.floor(Math.random() * randomNote.features.length)
+            ];
+
+        // handle normal vs. extension chords
+        if (randomType === "sus4") {
+            chordStr +=
+                randomChordNumber +
+                Music.displayTypes[randomType][
+                    Math.floor(
+                        Math.random() * Music.displayTypes[randomType].length
+                    )
+                ];
+        } else if (randomType === "half_diminished") {
+            chordStr +=
+                Music.displayTypes.minor[
+                    Math.floor(Math.random() * Music.displayTypes.minor.length)
+                ] +
+                randomChordNumber +
+                Music.displayTypes[randomType][
+                    Math.floor(
+                        Math.random() * Music.displayTypes[randomType].length
+                    )
+                ];
+        } else {
+            chordStr +=
+                Music.displayTypes[randomType][
+                    Math.floor(
+                        Math.random() * Music.displayTypes[randomType].length
+                    )
+                ] + randomChordNumber;
+        }
+
         setChordText(chordStr);
     };
 
